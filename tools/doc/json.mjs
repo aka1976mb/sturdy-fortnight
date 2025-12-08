@@ -372,13 +372,23 @@ const leadingHyphen = /^-\s*/;
 const defaultExpr = /\s*\*\*Default:\*\*\s*([^]+)$/i;
 
 function parseListItem(item, file) {
+  // Remove all HTML comments robustly (repeat until all gone)
+  function replaceAllHtmlComments(str) {
+    let previous;
+    do {
+      previous = str;
+      str = str.replace(/<!--.*?-->/sg, '');
+    } while (str !== previous);
+    return str;
+  }
+
   const current = {};
 
   current.textRaw = item.children.filter((node) => node.type !== 'list')
     .map((node) => (
       file.value.slice(node.position.start.offset, node.position.end.offset)),
     )
-    .join('').replace(/\s+/g, ' ').replace(/<!--.*?-->/sg, '');
+    .join('').replace(/\s+/g, ' ').replaceAllHtmlComments('');
   let text = current.textRaw;
 
   if (!text) {
