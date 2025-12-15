@@ -15,7 +15,7 @@ export function arrify(value) {
 export function extractAndParseYAML(text) {
   text = text.trim()
              .replace(/^<!-- YAML/, '')
-             .replace(/-->$/, '');
+             .replace(/--!?>(\s*)$/, '');
 
   // js-yaml.load() throws on error.
   const meta = yaml.load(text);
