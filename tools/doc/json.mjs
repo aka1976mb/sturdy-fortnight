@@ -89,6 +89,9 @@ export function jsonAPI({ filename }) {
               return '';
             });
           } while (node.value !== prev);
+          // Remove any remaining HTML comments to avoid leaving partial
+          // comment delimiters (e.g. "<!--") in the output.
+          node.value = node.value.replace(/<!--[\s\S]*?-->/g, '');
           if (!node.value.trim()) delete nodes[i];
         }
 
