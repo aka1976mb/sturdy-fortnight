@@ -81,10 +81,17 @@ export function jsonAPI({ filename }) {
       nodes.forEach((node, i) => {
         // Input: <!-- name=module -->; output: {name: module}.
         if (node.type === 'html') {
-          node.value = node.value.replace(metaExpr, (_0, key, value) => {
-            current[key.trim()] = value.trim();
-            return '';
-          });
+          let prev;
+          do {
+            prev = node.value;
+            node.value = node.value.replace(metaExpr, (_0, key, value) => {
+              current[key.trim()] = value.trim();
+              return '';
+            });
+          } while (node.value !== prev);
+          // Remove any remaining HTML comments to avoid leaving partial
+          // comment delimiters (e.g. "<!--") in the output.
+          node.value = node.value.replace(/<!--[\s\S]*?-->/g, '');
           if (!node.value.trim()) delete nodes[i];
         }
 
