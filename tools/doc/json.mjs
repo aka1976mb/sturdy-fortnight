@@ -90,8 +90,14 @@ export function jsonAPI({ filename }) {
             });
           } while (node.value !== prev);
           // Remove any remaining HTML comments to avoid leaving partial
-          // comment delimiters (e.g. "<!--") in the output.
-          node.value = node.value.replace(/<!--[\s\S]*?-->/g, '');
+          // comment delimiters (e.g. "<!--") in the output. Repeat until
+          // no more comments can be removed to avoid incomplete
+          // multi-character sanitization.
+          let prevComments;
+          do {
+            prevComments = node.value;
+            node.value = node.value.replace(/<!--[\s\S]*?-->/g, '');
+          } while (node.value !== prevComments);
           if (!node.value.trim()) delete nodes[i];
         }
 
