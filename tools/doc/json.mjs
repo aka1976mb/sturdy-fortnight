@@ -98,6 +98,12 @@ export function jsonAPI({ filename }) {
             prevComments = node.value;
             node.value = node.value.replace(/<!--[\s\S]*?-->/g, '');
           } while (node.value !== prevComments);
+          // As a final safeguard, strip any remaining comment delimiter
+          // fragments that are not part of well-formed comments, such as
+          // "<!--", "<!---", "<!-", "-->", or "---".
+          node.value = node.value
+            .replace(/<!-+/g, '')
+            .replace(/-+>/g, '');
           if (!node.value.trim()) delete nodes[i];
         }
 
